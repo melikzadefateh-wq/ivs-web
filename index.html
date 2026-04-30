@@ -3,148 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IVS Neural Analyzer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>IVS Neural Analyzer Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="bg-glow"></div>
+    <div class="bg-glow-2"></div>
 
-<div class="glass-card">
-    <div class="lang-toggle">
-        <button id="lang-en" class="active" onclick="switchLang('en')">EN</button>
-        <button id="lang-ru" onclick="switchLang('ru')">RU</button>
+    <div class="main-container">
+        <div class="glass-card">
+            <div class="header">
+                <div class="lang-selector">
+                    <span onclick="switchLang('en')" id="l-en" class="active">EN</span>
+                    <span onclick="switchLang('ru')" id="l-ru">RU</span>
+                </div>
+                <h1 id="t-title">IVS ANALYZER</h1>
+                <p class="subtitle" id="t-subtitle">Biological Rhythm Computing</p>
+            </div>
+
+            <div class="form-group">
+                <div class="input-field">
+                    <label id="t-flight">Flight Duration</label>
+                    <input type="number" id="tf" placeholder="0.0">
+                </div>
+                <div class="input-field">
+                    <label id="t-zones">Time Zones</label>
+                    <input type="number" id="tz" placeholder="0">
+                </div>
+                <div class="input-field">
+                    <label id="t-direction">Travel Vector</label>
+                    <select id="k">
+                        <option value="1" id="t-west">Westbound (Normal)</option>
+                        <option value="1.5" id="t-east">Eastbound (Heavy)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="analyze()" id="t-button" class="analyze-btn">Compute Index</button>
+
+            <div id="result" class="result-box">
+                <div class="res-header">
+                    <span id="t-res-label">ANALYSIS RESULT</span>
+                    <div class="status-dot" id="dot"></div>
+                </div>
+                <div class="res-value" id="ivsValue">0.00</div>
+                <div class="res-status" id="status-name"></div>
+                <p class="res-desc" id="info"></p>
+            </div>
+        </div>
     </div>
 
-    <h1 id="t-title">Neural Analyzer</h1>
-    
-    <div class="input-box">
-        <label id="t-flight">Flight Time (Hours)</label>
-        <input type="number" id="tf" placeholder="00.0">
-    </div>
+    <script>
+        let currentLang = 'en';
+        const dict = {
+            en: {
+                title: "IVS ANALYZER", subtitle: "Biological Rhythm Computing",
+                flight: "Flight Duration", zones: "Time Zones", direction: "Travel Vector",
+                west: "Westbound (Normal)", east: "Eastbound (Heavy)",
+                button: "Compute Index", resLabel: "ANALYSIS RESULT",
+                stable: "Optimal", stableInfo: "Biometric markers within normal range. Adaptation seamless.",
+                caution: "Warning", cautionInfo: "Mild metabolic shift. Hydration and light therapy recommended.",
+                critical: "Critical", criticalInfo: "Severe circadian disruption. Immediate sleep protocol required."
+            },
+            ru: {
+                title: "IVS АНАЛИЗАТОР", subtitle: "Вычисление биоритмов",
+                flight: "Длительность полета", zones: "Часовые пояса", direction: "Вектор пути",
+                west: "На Запад (Норма)", east: "На Восток (Тяжело)",
+                button: "Рассчитать", resLabel: "РЕЗУЛЬТАТ АНАЛИЗА",
+                stable: "Оптимально", stableInfo: "Биоритмы в норме. Адаптация пройдет незаметно.",
+                caution: "Внимание", cautionInfo: "Средний сдвиг. Требуется светотерапия и водный баланс.",
+                critical: "Критически", criticalInfo: "Тяжелый джетлаг. Необходим строгий протокол восстановления."
+            }
+        };
 
-    <div class="input-box">
-        <label id="t-zones">Time Zones Crossed</label>
-        <input type="number" id="tz" placeholder="0">
-    </div>
+        function switchLang(lang) {
+            currentLang = lang;
+            document.getElementById('l-en').classList.toggle('active', lang === 'en');
+            document.getElementById('l-ru').classList.toggle('active', lang === 'ru');
+            
+            const l = dict[lang];
+            document.getElementById('t-title').innerText = l.title;
+            document.getElementById('t-subtitle').innerText = l.subtitle;
+            document.getElementById('t-flight').innerText = l.flight;
+            document.getElementById('t-zones').innerText = l.zones;
+            document.getElementById('t-direction').innerText = l.direction;
+            document.getElementById('t-west').innerText = l.west;
+            document.getElementById('t-east').innerText = l.east;
+            document.getElementById('t-button').innerText = l.button;
+            document.getElementById('t-res-label').innerText = l.resLabel;
 
-    <div class="input-box">
-        <label id="t-direction">Direction Vector</label>
-        <select id="k">
-            <option value="1" id="t-west">Westbound (Slow)</option>
-            <option value="1.5" id="t-east">Eastbound (Fast)</option>
-        </select>
-    </div>
-
-    <button onclick="analyze()" id="t-button">Start Analysis</button>
-
-    <div id="result">
-        <span id="t-status-label" class="status-tag">Result</span>
-        <span class="ivs-number" id="ivsValue">0.0</span>
-        <p id="status-name" style="font-weight: bold; margin: 10px 0 5px 0; text-transform: uppercase; font-family: 'Orbitron', sans-serif;"></p>
-        <p id="info" style="font-size: 13px; opacity: 0.8; line-height: 1.5; margin-top: 0;"></p>
-    </div>
-</div>
-
-<script>
-    // Текущий язык
-    let currentLang = 'en';
-
-    // Словарь переводов
-    const dict = {
-        en: {
-            title: "Neural Analyzer",
-            flight: "Flight Time (Hours)",
-            zones: "Time Zones Crossed",
-            direction: "Direction Vector",
-            west: "Westbound (Slow)",
-            east: "Eastbound (Fast)",
-            button: "Start Analysis",
-            resultLabel: "Result",
-            stable: "System Stable",
-            stableInfo: "Biological rhythms are synchronized. Adaptation will be optimal.",
-            caution: "Caution",
-            cautionInfo: "Mild desynchronization detected. Increase hydration and light exposure.",
-            critical: "Critical Shift",
-            criticalInfo: "Severe jet lag risk. Artificial melatonin or strict sleep protocol advised."
-        },
-        ru: {
-            title: "Нейро-Анализатор",
-            flight: "Время полета (Часы)",
-            zones: "Часовые пояса",
-            direction: "Направление",
-            west: "На Запад (Легко)",
-            east: "На Восток (Тяжело)",
-            button: "Начать анализ",
-            resultLabel: "Результат",
-            stable: "Система стабильна",
-            stableInfo: "Биоритмы синхронизированы. Адаптация пройдет легко.",
-            caution: "Внимание",
-            cautionInfo: "Легкий сбой. Пейте больше воды и соблюдайте световой режим.",
-            critical: "Критический сдвиг",
-            criticalInfo: "Высокий риск джетлага. Рекомендуется строгий протокол сна."
+            if(document.getElementById('result').classList.contains('show')) analyze();
         }
-    };
 
-    // Функция переключения языка
-    function switchLang(lang) {
-        currentLang = lang;
-        
-        // Обновляем кнопки языков
-        document.getElementById('lang-en').classList.remove('active');
-        document.getElementById('lang-ru').classList.remove('active');
-        document.getElementById(`lang-${lang}`).classList.add('active');
+        function analyze() {
+            const tf = parseFloat(document.getElementById('tf').value);
+            const tz = parseFloat(document.getElementById('tz').value);
+            const k = parseFloat(document.getElementById('k').value);
+            if (!tf || isNaN(tz)) return;
 
-        // Меняем текст в интерфейсе
-        document.getElementById('t-title').innerText = dict[lang].title;
-        document.getElementById('t-flight').innerText = dict[lang].flight;
-        document.getElementById('t-zones').innerText = dict[lang].zones;
-        document.getElementById('t-direction').innerText = dict[lang].direction;
-        document.getElementById('t-west').innerText = dict[lang].west;
-        document.getElementById('t-east').innerText = dict[lang].east;
-        document.getElementById('t-button').innerText = dict[lang].button;
-        document.getElementById('t-status-label').innerText = dict[lang].resultLabel;
+            const ivs = (k * (tz / tf)).toFixed(2);
+            const resBox = document.getElementById('result');
+            const val = document.getElementById('ivsValue');
+            const stName = document.getElementById('status-name');
+            const info = document.getElementById('info');
+            const dot = document.getElementById('dot');
+            const l = dict[currentLang];
 
-        // Если результат уже открыт, обновляем и его
-        if (document.getElementById('result').style.display === 'block') {
-            analyze(); 
+            resBox.classList.add('show');
+            val.innerText = ivs;
+
+            if (ivs < 0.7) {
+                val.style.color = "#00ff88"; stName.innerText = l.stable; info.innerText = l.stableInfo; dot.style.background = "#00ff88";
+            } else if (ivs <= 1.0) {
+                val.style.color = "#ffcc00"; stName.innerText = l.caution; info.innerText = l.cautionInfo; dot.style.background = "#ffcc00";
+            } else {
+                val.style.color = "#ff4444"; stName.innerText = l.critical; info.innerText = l.criticalInfo; dot.style.background = "#ff4444";
+            }
         }
-    }
-
-    // Функция анализа
-    function analyze() {
-        const tf = parseFloat(document.getElementById('tf').value);
-        const tz = parseFloat(document.getElementById('tz').value);
-        const k = parseFloat(document.getElementById('k').value);
-        const resDiv = document.getElementById('result');
-
-        if (!tf || isNaN(tz)) return;
-
-        const ivs = k * (tz / tf);
-        const valSpan = document.getElementById('ivsValue');
-        const statusName = document.getElementById('status-name');
-        const info = document.getElementById('info');
-        const langData = dict[currentLang];
-
-        valSpan.innerText = ivs.toFixed(2);
-        resDiv.style.display = 'block';
-
-        if (ivs < 0.7) {
-            valSpan.className = 'ivs-number good';
-            statusName.innerText = langData.stable;
-            statusName.className = 'good';
-            info.innerText = langData.stableInfo;
-        } else if (ivs <= 1.0) {
-            valSpan.className = 'ivs-number warning';
-            statusName.innerText = langData.caution;
-            statusName.className = 'warning';
-            info.innerText = langData.cautionInfo;
-        } else {
-            valSpan.className = 'ivs-number danger';
-            statusName.innerText = langData.critical;
-            statusName.className = 'danger';
-            info.innerText = langData.criticalInfo;
-        }
-    }
-</script>
+    </script>
 </body>
 </html>

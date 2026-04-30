@@ -2,90 +2,74 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>IVS Calculator — Твой личный индекс времени</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h1 { color: #005088; text-align: center; margin-bottom: 25px; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #334155; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 12px; background: #005088; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        button:hover { background: #003d66; }
-        #result { margin-top: 25px; padding: 15px; border-radius: 10px; text-align: center; display: none; }
-        .ivs-value { font-size: 32px; font-weight: bold; display: block; }
-        .low { background: #dcfce7; color: #166534; }
-        .mid { background: #fef9c3; color: #854d0e; }
-        .high { background: #fee2e2; color: #991b1b; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVS Neural Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="card">
-    <h1>✈️ IVS Calculator</h1>
+<div class="glass-card">
+    <h1>Neural Analyzer</h1>
     
-    <div class="input-group">
-        <label>Время полёта (в часах)</label>
-        <input type="number" id="tFlight" placeholder="Например: 8">
+    <div class="input-box">
+        <label>Flight Time (Hours)</label>
+        <input type="number" id="tf" placeholder="00.0">
     </div>
 
-    <div class="input-group">
-        <label>Разница поясов (в часах)</label>
-        <input type="number" id="tZone" placeholder="Например: 7">
+    <div class="input-box">
+        <label>Time Zones Crossed</label>
+        <input type="number" id="tz" placeholder="0">
     </div>
 
-    <div class="input-group">
-        <label>Направление</label>
-        <select id="direction">
-            <option value="1">На Запад (k = 1.0)</option>
-            <option value="1.5">На Восток (k = 1.5)</option>
+    <div class="input-box">
+        <label>Direction Vector</label>
+        <select id="k">
+            <option value="1">Westbound (Slow)</option>
+            <option value="1.5">Eastbound (Fast)</option>
         </select>
     </div>
 
-    <button onclick="calculateIVS()">Рассчитать индекс</button>
+    <button onclick="analyze()">Start Analysis</button>
 
     <div id="result">
-        <span id="resultText">Ваш индекс:</span>
-        <span class="ivs-value" id="ivsValue">0</span>
-        <p id="desc"></p>
+        <span id="status" class="status-tag">Result</span>
+        <span class="ivs-number" id="ivsValue">0.0</span>
+        <p id="info" style="font-size: 13px; opacity: 0.8; line-height: 1.5;"></p>
     </div>
 </div>
 
 <script>
-    function calculateIVS() {
-        const tf = parseFloat(document.getElementById('tFlight').value);
-        const tz = parseFloat(document.getElementById('tZone').value);
-        const k = parseFloat(document.getElementById('direction').value);
+    function analyze() {
+        const tf = parseFloat(document.getElementById('tf').value);
+        const tz = parseFloat(document.getElementById('tz').value);
+        const k = parseFloat(document.getElementById('k').value);
         const resDiv = document.getElementById('result');
 
-        if (!tf || !tz) {
-            alert("Пожалуйста, введите все данные!");
-            return;
-        }
+        if (!tf || isNaN(tz)) return;
 
-        // Твоя формула: k * (tz / tf)
         const ivs = k * (tz / tf);
-        const finalIvs = ivs.toFixed(2);
+        const valSpan = document.getElementById('ivsValue');
+        const statusSpan = document.getElementById('status');
+        const info = document.getElementById('info');
 
-        document.getElementById('ivsValue').innerText = finalIvs;
+        valSpan.innerText = ivs.toFixed(2);
         resDiv.style.display = 'block';
 
-        const desc = document.getElementById('desc');
-        resDiv.className = ''; 
-
         if (ivs < 0.7) {
-            resDiv.classList.add('low');
-            desc.innerText = "Всё отлично! Организм легко справится.";
+            valSpan.className = 'ivs-number good';
+            statusSpan.innerText = "System Stable";
+            info.innerText = "Biological rhythms are synchronized. Adaptation will be optimal.";
         } else if (ivs <= 1.0) {
-            resDiv.classList.add('mid');
-            desc.innerText = "Будет небольшая дезориентация. Пей больше воды!";
+            valSpan.className = 'ivs-number warning';
+            statusSpan.innerText = "Caution";
+            info.innerText = "Mild desynchronization detected. Increase hydration and light exposure.";
         } else {
-            resDiv.classList.add('high');
-            desc.innerText = "Сильный временной сдвиг! Готовься к джетлагу.";
+            valSpan.className = 'ivs-number danger';
+            statusSpan.innerText = "Critical Shift";
+            info.innerText = "Severe jet lag risk. Artificial melatonin or strict sleep protocol advised.";
         }
     }
 </script>
-
 </body>
 </html>
-

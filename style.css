@@ -33,11 +33,46 @@ body {
     z-index: 1;
 }
 
+/* Стили для переключателя языков */
+.lang-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 4px;
+    display: flex;
+    gap: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lang-toggle button {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 0;
+    width: auto;
+    letter-spacing: 1px;
+}
+
+.lang-toggle button.active {
+    background: rgba(0, 242, 255, 0.2);
+    color: var(--accent);
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
+}
+
 h1 {
     font-family: 'Orbitron', sans-serif;
     text-align: center;
     font-size: 22px;
     letter-spacing: 3px;
+    margin-top: 10px;
     margin-bottom: 30px;
     background: linear-gradient(to right, var(--accent), var(--accent-purple));
     -webkit-background-clip: text;
@@ -57,6 +92,7 @@ label {
     color: rgba(255, 255, 255, 0.5);
     margin-bottom: 8px;
     text-transform: uppercase;
+    transition: 0.3s;
 }
 
 input, select {
@@ -72,7 +108,12 @@ input, select {
     outline: none;
 }
 
-input:focus {
+select option {
+    background: #111;
+    color: white;
+}
+
+input:focus, select:focus {
     border-color: var(--accent);
     background: rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
@@ -107,6 +148,8 @@ button:hover {
     text-align: center;
     display: none;
     animation: slideUp 0.5s ease;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 @keyframes slideUp {
@@ -124,11 +167,13 @@ button:hover {
 }
 
 .status-tag {
-    font-size: 12px;
+    font-size: 10px;
     padding: 5px 12px;
     border-radius: 20px;
     text-transform: uppercase;
     font-weight: bold;
+    background: rgba(255,255,255,0.1);
+    letter-spacing: 1px;
 }
 
 .good { color: #00ff88; }
